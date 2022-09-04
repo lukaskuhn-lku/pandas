@@ -2248,6 +2248,7 @@ Name: Max Speed, dtype: float64
         keep: Literal["first", "last", False] = ...,
         *,
         inplace: Literal[False] = ...,
+        ignore_index: bool = False,
     ) -> Series:
         ...
 
@@ -2281,6 +2282,9 @@ Name: Max Speed, dtype: float64
 
         inplace : bool, default ``False``
             If ``True``, performs operation inplace and returns None.
+
+        ignore_index : bool, default False
+            If True, the resulting axis will be labeled 0, 1, …, n - 1.
 
         Returns
         -------
@@ -2343,7 +2347,12 @@ Name: Max Speed, dtype: float64
         Name: animal, dtype: object
         """
         inplace = validate_bool_kwarg(inplace, "inplace")
+        ignore_index = validate_bool_kwarg(ignore_index, "ignore_index")
         result = super().drop_duplicates(keep=keep)
+
+        if ignore_index:
+            result.index = reset_index(drop=False)
+
         if inplace:
             self._update_inplace(result)
             return None
